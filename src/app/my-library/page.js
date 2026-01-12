@@ -51,8 +51,8 @@ export default function MyLibraryPage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`${activeTab === tab.id
-                                        ? 'border-amber-500 text-amber-600'
-                                        : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
+                                    ? 'border-amber-500 text-amber-600'
+                                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
                                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
                             >
                                 <Icon className={`mr-2 h-5 w-5 ${activeTab === tab.id ? 'text-amber-500' : 'text-stone-400'}`} />
@@ -72,28 +72,30 @@ export default function MyLibraryPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {library.currentlyReading.length > 0 ? (
                             library.currentlyReading.map((item) => (
-                                <div key={item.book._id} className="bg-white rounded-lg shadow-sm border border-stone-200 p-6 flex space-x-4">
-                                    <div className="flex-shrink-0 w-24 h-36 bg-stone-200 rounded overflow-hidden">
+                                <div key={item.book._id} className="bg-white rounded-lg shadow-sm border border-stone-200 p-6 flex space-x-4 h-full">
+                                    <div className="flex-shrink-0 w-24 aspect-[2/3] bg-stone-200 rounded overflow-hidden">
                                         <img src={item.book.coverImage} alt={item.book.title} className="w-full h-full object-cover" />
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 flex flex-col min-w-0">
                                         <h3 className="text-lg font-bold text-stone-900 truncate">{item.book.title}</h3>
-                                        <p className="text-sm text-stone-500 mb-4">{item.book.author}</p>
+                                        <p className="text-sm text-stone-500 mb-4 truncate">{item.book.author}</p>
 
-                                        <div className="mb-2 flex justify-between text-xs text-stone-500">
-                                            <span>Progress</span>
-                                            <span>{item.progress} / {item.totalLength || '?'} pages</span>
-                                        </div>
-                                        <div className="w-full bg-stone-200 rounded-full h-2.5 mb-4">
-                                            <div
-                                                className="bg-amber-600 h-2.5 rounded-full"
-                                                style={{ width: `${item.totalLength ? Math.min((item.progress / item.totalLength) * 100, 100) : 0}%` }}
-                                            ></div>
-                                        </div>
+                                        <div className="mt-auto">
+                                            <div className="mb-2 flex justify-between text-xs text-stone-500">
+                                                <span>Progress</span>
+                                                <span>{item.progress} / {item.totalLength || '?'} pages</span>
+                                            </div>
+                                            <div className="w-full bg-stone-200 rounded-full h-2.5 mb-4">
+                                                <div
+                                                    className="bg-amber-600 h-2.5 rounded-full"
+                                                    style={{ width: `${item.totalLength ? Math.min((item.progress / item.totalLength) * 100, 100) : 0}%` }}
+                                                ></div>
+                                            </div>
 
-                                        <Link href={`/books/${item.book._id}`} className="text-sm text-amber-700 hover:text-amber-900 font-medium">
-                                            Update Progress &rarr;
-                                        </Link>
+                                            <Link href={`/books/${item.book._id}`} className="text-sm text-amber-700 hover:text-amber-900 font-medium">
+                                                Update Progress &rarr;
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
                             ))
@@ -109,12 +111,14 @@ export default function MyLibraryPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                         {library.wantToRead.length > 0 ? (
                             library.wantToRead.map((book) => (
-                                <Link href={`/books/${book._id}`} key={book._id} className="group">
-                                    <div className="aspect-w-2 aspect-h-3 w-full overflow-hidden rounded-lg bg-stone-200">
-                                        <img src={book.coverImage} alt={book.title} className="h-full w-full object-cover group-hover:opacity-75 transition-opacity" />
+                                <Link href={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full">
+                                    <div className="aspect-3/4 w-full overflow-hidden rounded-lg bg-stone-200">
+                                        <img src={book.coverImage} alt={book.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                                     </div>
-                                    <h3 className="mt-2 text-sm font-medium text-stone-900 truncate">{book.title}</h3>
-                                    <p className="text-xs text-stone-500 truncate">{book.author}</p>
+                                    <div className="mt-3 flex flex-col flex-1 min-w-0">
+                                        <h3 className="text-sm font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
+                                        <p className="text-xs text-stone-500 truncate">{book.author}</p>
+                                    </div>
                                 </Link>
                             ))
                         ) : (
@@ -129,21 +133,23 @@ export default function MyLibraryPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                         {library.read.length > 0 ? (
                             library.read.map((book) => (
-                                <Link href={`/books/${book._id}`} key={book._id} className="group">
-                                    <div className="aspect-w-2 aspect-h-3 w-full overflow-hidden rounded-lg bg-stone-200">
-                                        <img src={book.coverImage} alt={book.title} className="h-full w-full object-cover group-hover:opacity-75 transition-opacity" />
+                                <Link href={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full">
+                                    <div className="aspect-3/4 w-full overflow-hidden rounded-lg bg-stone-200">
+                                        <img src={book.coverImage} alt={book.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                                     </div>
-                                    <h3 className="mt-2 text-sm font-medium text-stone-900 truncate">{book.title}</h3>
-                                    <p className="text-xs text-stone-500 truncate">{book.author}</p>
-                                    <div className="mt-1 flex items-center">
-                                        <HiCheck className="w-4 h-4 text-green-500 mr-1" />
-                                        <span className="text-xs text-green-600">Finished</span>
+                                    <div className="mt-3 flex flex-col flex-1 min-w-0">
+                                        <h3 className="text-sm font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
+                                        <p className="text-xs text-stone-500 truncate">{book.author}</p>
+                                        <div className="mt-2 flex items-center">
+                                            <HiCheck className="w-4 h-4 text-green-500 mr-1" />
+                                            <span className="text-xs text-green-600">Finished</span>
+                                        </div>
                                     </div>
                                 </Link>
                             ))
                         ) : (
                             <div className="col-span-full text-center py-12 text-stone-500 border-2 border-dashed border-stone-200 rounded-lg">
-                                Haven't finished any books yet? Keep reading!
+                                Haven&apos;t finished any books yet? Keep reading!
                             </div>
                         )}
                     </div>
