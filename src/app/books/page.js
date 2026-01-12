@@ -11,6 +11,8 @@ export default function BooksPage() {
     const router = useRouter();
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [pages, setPages] = useState(1);
     const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
     const [selectedGenre, setSelectedGenre] = useState(searchParams.get('genre') || '');
 
@@ -23,8 +25,11 @@ export default function BooksPage() {
             try {
                 const search = searchParams.get('keyword') || '';
                 const genre = searchParams.get('genre') || '';
-                const { data } = await axios.get(`/api/books?keyword=${search}&genre=${genre}`);
+                const pageNum = searchParams.get('pageNumber') || 1;
+                const { data } = await axios.get(`/api/books?keyword=${search}&genre=${genre}&pageNumber=${pageNum}`);
                 setBooks(data.books);
+                setPage(data.page);
+                setPages(data.pages);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -37,13 +42,17 @@ export default function BooksPage() {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        updateSearchParams({ keyword });
+        updateSearchParams({ keyword, pageNumber: 1 });
     };
 
     const handleGenreChange = (genre) => {
         const newGenre = genre === selectedGenre ? '' : genre; // Toggle
         setSelectedGenre(newGenre);
-        updateSearchParams({ genre: newGenre });
+        updateSearchParams({ genre: newGenre, pageNumber: 1 });
+    };
+
+    const handlePageChange = (pageNum) => {
+        updateSearchParams({ pageNumber: pageNum });
     };
 
     const updateSearchParams = (params) => {
@@ -124,40 +133,81 @@ export default function BooksPage() {
                             ))}
                         </div>
                     ) : books.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {books.map((book) => (
-                                <Link href={`/books/${book._id}`} key={book._id} className="group bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden hover:shadow-md transition-shadow">
-                                    <div className="aspect-w-3 aspect-h-4 bg-stone-200">
-                                        <img
-                                            src={book.coverImage}
-                                            alt={book.title}
-                                            className="h-full w-full object-cover object-center group-hover:opacity-90 transition-opacity"
-                                        />
-                                    </div>
-                                    <div className="p-4">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="text-lg font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
-                                                <p className="text-sm text-stone-500">{book.author}</p>
-                                            </div>
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                                {book.genre}
-                                            </span>
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {books.map((book) => (
+                                    <Link href={`/books/${book._id}`} key={book._id} className="group bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
+                                        <div className="aspect-[3/4] bg-stone-200 overflow-hidden">
+                                            <img
+                                                src={book.coverImage}
+                                                alt={book.title}
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
                                         </div>
-                                        <div className="mt-2 flex items-center">
-                                            <div className="flex text-amber-400">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <svg key={i} className={`h-4 w-4 ${i < Math.round(book.averageRating) ? 'fill-current' : 'text-stone-300'}`} viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                ))}
+                                        <div className="p-4 flex flex-col flex-1">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-lg font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
+                                                    <p className="text-sm text-stone-500 truncate">{book.author}</p>
+                                                </div>
+                                                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 flex-shrink-0">
+                                                    {book.genre}
+                                                </span>
                                             </div>
-                                            <span className="ml-2 text-xs text-stone-500">({book.ratingCount || 0})</span>
+                                            <div className="mt-auto flex items-center">
+                                                <div className="flex text-amber-400">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <svg key={i} className={`h-4 w-4 ${i < Math.round(book.averageRating) ? 'fill-current' : 'text-stone-300'}`} viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                        </svg>
+                                                    ))}
+                                                </div>
+                                                <span className="ml-2 text-xs text-stone-500">({book.ratingCount || 0})</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            {pages > 1 && (
+                                <div className="mt-12 flex justify-center">
+                                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                        <button
+                                            onClick={() => handlePageChange(page - 1)}
+                                            disabled={page === 1}
+                                            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-stone-300 bg-white text-sm font-medium ${page === 1 ? 'text-stone-300 cursor-not-allowed' : 'text-stone-500 hover:bg-stone-50'}`}
+                                        >
+                                            <span className="sr-only">Previous</span>
+                                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        {[...Array(pages)].map((_, i) => (
+                                            <button
+                                                key={i + 1}
+                                                onClick={() => handlePageChange(i + 1)}
+                                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === i + 1 ? 'z-10 bg-amber-50 border-amber-500 text-amber-600' : 'bg-white border-stone-300 text-stone-500 hover:bg-stone-50'}`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => handlePageChange(page + 1)}
+                                            disabled={page === pages}
+                                            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-stone-300 bg-white text-sm font-medium ${page === pages ? 'text-stone-300 cursor-not-allowed' : 'text-stone-500 hover:bg-stone-50'}`}
+                                        >
+                                            <span className="sr-only">Next</span>
+                                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </nav>
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="text-center py-12">
                             <h3 className="mt-2 text-sm font-medium text-stone-900">No books found</h3>
