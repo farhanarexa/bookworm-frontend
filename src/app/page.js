@@ -44,7 +44,7 @@ export default function Home() {
           <div className="mx-auto max-w-2xl lg:mx-0">
             <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">Track your reading journey</h2>
             <p className="mt-6 text-lg leading-8 text-stone-300">
-              Discover new worlds, keep track of what you've read, and join a community of book lovers. Start your personal library today.
+              Discover new worlds, keep track of what you&apos;ve read, and join a community of book lovers. Start your personal library today.
             </p>
             <div className="mt-10 flex items-center gap-x-6">
               <Link href="/auth/register" className="rounded-md bg-amber-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
@@ -62,9 +62,9 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
+      <div className="mb-8 border-b border-stone-200 pb-6">
         <h1 className="text-3xl font-bold text-stone-900">Welcome back, {user.name}!</h1>
-        <p className="mt-2 text-stone-600">Here are some books we think you'll love based on your reading history.</p>
+        <p className="mt-2 text-stone-600">Here are some books we think you&apos;ll love based on your reading history.</p>
       </div>
 
       {loadingRecs ? (
@@ -77,16 +77,18 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {recommendations.length > 0 ? (
             recommendations.map((book) => (
-              <Link href={`/books/${book._id}`} key={book._id} className="group">
-                <div className="aspect-w-2 aspect-h-3 w-full overflow-hidden rounded-lg bg-stone-200">
+              <Link href={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full bg-white p-2 rounded-lg border border-transparent hover:border-stone-200 hover:shadow-sm transition-all">
+                <div className="aspect-3/4 w-full overflow-hidden rounded-md bg-stone-200">
                   <img
                     src={book.coverImage}
                     alt={book.title}
-                    className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-                <h3 className="mt-4 text-sm font-medium text-stone-900 truncate">{book.title}</h3>
-                <p className="mt-1 text-sm text-stone-500 truncate">{book.author}</p>
+                <div className="mt-4 flex flex-col flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
+                  <p className="mt-1 text-xs text-stone-500 truncate">{book.author}</p>
+                </div>
               </Link>
             ))
           ) : (
@@ -103,7 +105,7 @@ export default function Home() {
           </div>
           <span className="text-amber-800 font-medium">10 / 50 Books</span>
         </div>
-        <p className="mt-2 text-sm text-amber-700">You're on track! Keep reading to reach your goal.</p>
+        <p className="mt-2 text-sm text-amber-700">You&apos;re on track! Keep reading to reach your goal.</p>
       </div>
     </div>
   );
