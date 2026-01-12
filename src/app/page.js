@@ -1,65 +1,110 @@
-import Image from "next/image";
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Link from "next/link";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const [recommendations, setRecommendations] = useState([]);
+  const [loadingRecs, setLoadingRecs] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      const fetchRecommendations = async () => {
+        try {
+          const { data } = await axios.get('/api/books/recommendations');
+          setRecommendations(data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoadingRecs(false);
+        }
+      };
+      fetchRecommendations();
+    } else {
+      // Fetch popular books for guests logic could be here, but for now just wait for login
+      // Actually, let's fetch generic generic popular books if not logged in if the API supports it
+      // Our API endpoint /recommendations is protected. 
+      // We can just show a landing hero for guests.
+      setLoadingRecs(false);
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen text-amber-800">Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="relative isolate overflow-hidden bg-stone-900 py-24 sm:py-32 h-[calc(100vh-64px)] flex flex-col justify-center">
+        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="" className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center opacity-30" />
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:mx-0">
+            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">Track your reading journey</h2>
+            <p className="mt-6 text-lg leading-8 text-stone-300">
+              Discover new worlds, keep track of what you've read, and join a community of book lovers. Start your personal library today.
+            </p>
+            <div className="mt-10 flex items-center gap-x-6">
+              <Link href="/auth/register" className="rounded-md bg-amber-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
+                Get started
+              </Link>
+              <Link href="/books" className="text-sm font-semibold leading-6 text-white">
+                Browse books <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-stone-900">Welcome back, {user.name}!</h1>
+        <p className="mt-2 text-stone-600">Here are some books we think you'll love based on your reading history.</p>
+      </div>
+
+      {loadingRecs ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 animate-pulse">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-64 bg-stone-200 rounded-lg"></div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          {recommendations.length > 0 ? (
+            recommendations.map((book) => (
+              <Link href={`/books/${book._id}`} key={book._id} className="group">
+                <div className="aspect-w-2 aspect-h-3 w-full overflow-hidden rounded-lg bg-stone-200">
+                  <img
+                    src={book.coverImage}
+                    alt={book.title}
+                    className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity"
+                  />
+                </div>
+                <h3 className="mt-4 text-sm font-medium text-stone-900 truncate">{book.title}</h3>
+                <p className="mt-1 text-sm text-stone-500 truncate">{book.author}</p>
+              </Link>
+            ))
+          ) : (
+            <p className="text-stone-500 col-span-full">Start adding books to your dashboard to see recommendations!</p>
+          )}
         </div>
-      </main>
+      )}
+
+      <div className="mt-12 bg-amber-50 rounded-xl p-8 border border-amber-100">
+        <h2 className="text-2xl font-bold text-amber-900 mb-4">Reading Challenge 2026</h2>
+        <div className="flex items-center space-x-4">
+          <div className="flex-1 bg-white rounded-full h-4 overflow-hidden border border-amber-200">
+            <div className="bg-amber-600 h-full w-[20%]"></div>
+          </div>
+          <span className="text-amber-800 font-medium">10 / 50 Books</span>
+        </div>
+        <p className="mt-2 text-sm text-amber-700">You're on track! Keep reading to reach your goal.</p>
+      </div>
     </div>
   );
 }
