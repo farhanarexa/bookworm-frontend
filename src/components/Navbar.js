@@ -28,6 +28,12 @@ export default function Navbar() {
                             <Link href="/books" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname.includes('/books') ? 'border-amber-500 text-amber-900' : 'border-transparent text-stone-500 hover:border-stone-300 hover:text-stone-700'}`}>
                                 Browse Books
                             </Link>
+                            <Link
+                                href="/tutorials"
+                                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname.includes('/tutorials') ? 'border-amber-500 text-amber-900' : 'border-transparent text-stone-500 hover:border-stone-300 hover:text-stone-700'}`}
+                            >
+                                Tutorials
+                            </Link>
                             {user && user.role !== 'admin' && (
                                 <Link href="/my-library" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${pathname === '/my-library' ? 'border-amber-500 text-amber-900' : 'border-transparent text-stone-500 hover:border-stone-300 hover:text-stone-700'}`}>
                                     My Library
@@ -90,13 +96,24 @@ export default function Navbar() {
                         <Link href="/books" className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${pathname.includes('/books') ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-transparent text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700'}`}>
                             Browse Books
                         </Link>
+                        <Link
+                            href="/tutorials"
+                            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${pathname.includes('/tutorials') ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-transparent text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700'}`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Tutorials
+                        </Link>
                         {user && user.role !== 'admin' && (
                             <Link href="/my-library" className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${pathname === '/my-library' ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-transparent text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700'}`}>
                                 My Library
                             </Link>
                         )}
                         {user && user.role === 'admin' && (
-                            <Link href="/admin/dashboard" className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${pathname.includes('/admin') ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-transparent text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700'}`}>
+                            <Link
+                                href="/admin/dashboard"
+                                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${pathname.includes('/admin') ? 'border-amber-500 text-amber-700 bg-amber-50' : 'border-transparent text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700'}`}
+                                onClick={() => setIsOpen(false)}
+                            >
                                 Admin Dashboard
                             </Link>
                         )}

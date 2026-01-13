@@ -78,7 +78,7 @@ export default function AdminReviewsPage() {
                                             </span>
                                         </div>
                                         <p className="text-sm text-stone-500 mb-2">By {review.user?.name || 'Unknown User'}</p>
-                                        <p className="text-stone-700 italic">"{review.content}"</p>
+                                        <p className="text-stone-700 italic">&quot;{review.content}&quot;</p>
                                     </div>
                                     <div className="ml-6 flex items-center space-x-3">
                                         <button

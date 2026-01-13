@@ -92,9 +92,34 @@ export default function MyLibraryPage() {
                                                 ></div>
                                             </div>
 
-                                            <Link href={`/books/${item.book._id}`} className="text-sm text-amber-700 hover:text-amber-900 font-medium">
-                                                Update Progress &rarr;
-                                            </Link>
+                                            <div className="flex flex-col space-y-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Page"
+                                                        defaultValue={item.progress}
+                                                        className="w-16 px-2 py-1 text-xs border border-stone-300 rounded focus:ring-amber-500 focus:border-amber-500"
+                                                        onBlur={(e) => {
+                                                            const val = parseInt(e.target.value);
+                                                            if (!isNaN(val)) addToShelf(item.book._id, 'currentlyReading', val, item.totalLength);
+                                                        }}
+                                                    />
+                                                    <span className="text-xs text-stone-400">/</span>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Total"
+                                                        defaultValue={item.totalLength}
+                                                        className="w-16 px-2 py-1 text-xs border border-stone-300 rounded focus:ring-amber-500 focus:border-amber-500"
+                                                        onBlur={(e) => {
+                                                            const val = parseInt(e.target.value);
+                                                            if (!isNaN(val)) addToShelf(item.book._id, 'currentlyReading', item.progress, val);
+                                                        }}
+                                                    />
+                                                </div>
+                                                <Link href={`/books/${item.book._id}`} className="text-xs text-amber-700 hover:text-amber-900 font-medium">
+                                                    View Details &rarr;
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

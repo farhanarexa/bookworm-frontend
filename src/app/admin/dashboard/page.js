@@ -5,16 +5,30 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
-import { HiBookOpen, HiUsers, HiStar, HiPlus } from 'react-icons/hi';
+import {
+    HiBookOpen,
+    HiUsers,
+    HiStar,
+    HiPlus,
+    HiVideoCamera,
+    HiAdjustments,
+    HiChartPie
+} from 'react-icons/hi';
+import {
+    PieChart,
+    Pie,
+    Cell,
+    ResponsiveContainer,
+    Tooltip,
+    Legend
+} from 'recharts';
+
+const COLORS = ['#D97706', '#059669', '#2563EB', '#7C3AED', '#DB2777', '#4B5563'];
 
 export default function AdminDashboard() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
-    const [stats, setStats] = useState({
-        totalBooks: 0,
-        pendingReviews: 0,
-        totalUsers: 0 // We don't have an endpoint for this yet, so maybe skip or mock
-    });
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,16 +40,8 @@ export default function AdminDashboard() {
 
             const fetchStats = async () => {
                 try {
-                    // Fetch real stats
-                    // For now we can fetch books count and pending reviews count
-                    const booksRes = await axios.get('/api/books?pageNumber=1');
-                    const reviewsRes = await axios.get('/api/reviews/pending');
-
-                    setStats({
-                        totalBooks: booksRes.data.count,
-                        pendingReviews: reviewsRes.data.length,
-                        totalUsers: '-' // Placeholder
-                    });
+                    const { data } = await axios.get('/api/admin/stats');
+                    setStats(data);
                 } catch (error) {
                     console.error(error);
                 } finally {
@@ -46,67 +52,114 @@ export default function AdminDashboard() {
         }
     }, [user, authLoading, router]);
 
-    if (authLoading || loading) return <div className="flex justify-center p-8">Loading...</div>;
+    if (authLoading || loading) return (
+        <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+        </div>
+    );
+
+    const statCards = [
+        { label: 'Total Books', value: stats.totalBooks, icon: HiBookOpen, color: 'bg-blue-100 text-blue-600' },
+        { label: 'Total Users', value: stats.totalUsers, icon: HiUsers, color: 'bg-green-100 text-green-600' },
+        { label: 'Pending Reviews', value: stats.pendingReviews, icon: HiStar, color: 'bg-yellow-100 text-yellow-600' },
+        { label: 'Total Tutorials', value: stats.totalTutorials, icon: HiVideoCamera, color: 'bg-purple-100 text-purple-600' },
+    ];
+
+    const managementLinks = [
+        { title: 'Manage Books', desc: 'Add, edit, or remove books from the catalog.', href: '/admin/books', icon: HiBookOpen },
+        { title: 'Moderate Reviews', desc: 'Approve or reject user submitted reviews.', href: '/admin/reviews', icon: HiStar },
+        { title: 'User Roles', desc: 'Manage user permissions and roles.', href: '/admin/users', icon: HiUsers },
+        { title: 'Tutorials', desc: 'Manage video guides and lessons.', href: '/admin/tutorials', icon: HiVideoCamera },
+    ];
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-stone-900 mb-8">Admin Dashboard</h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 flex items-center">
-                    <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-                        <HiBookOpen className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-stone-500">Total Books</p>
-                        <p className="text-2xl font-bold text-stone-900">{stats.totalBooks}</p>
-                    </div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-stone-900 font-serif">Admin Dashboard</h1>
+                    <p className="mt-2 text-stone-600">Overview of your library statistics and management tools.</p>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 flex items-center">
-                    <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-                        <HiStar className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-stone-500">Pending Reviews</p>
-                        <p className="text-2xl font-bold text-stone-900">{stats.pendingReviews}</p>
-                    </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 flex items-center">
-                    <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                        <HiUsers className="h-8 w-8" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-stone-500">Total Users</p>
-                        <p className="text-2xl font-bold text-stone-900">{stats.totalUsers}</p>
-                    </div>
+                <div className="mt-4 md:mt-0">
+                    <Link href="/admin/books/new" className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700">
+                        <HiPlus className="-ml-1 mr-2 h-5 w-5" />
+                        Add New Book
+                    </Link>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Link href="/admin/books" className="block p-6 bg-white border border-stone-200 rounded-lg hover:shadow-md transition-shadow group">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-stone-900 group-hover:text-amber-700">Manage Books</h3>
-                        <HiBookOpen className="h-6 w-6 text-stone-400 group-hover:text-amber-600" />
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                {statCards.map((card) => (
+                    <div key={card.label} className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 flex items-center">
+                        <div className={`p-3 rounded-xl ${card.color} mr-4`}>
+                            <card.icon className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-stone-500">{card.label}</p>
+                            <p className="text-2xl font-bold text-stone-900">{card.value}</p>
+                        </div>
                     </div>
-                    <p className="text-stone-600 mb-4">Add, edit, or remove books from the library catalog.</p>
-                    <span className="text-amber-600 text-sm font-medium group-hover:underline">Go to Books &rarr;</span>
-                </Link>
-
-                <Link href="/admin/reviews" className="block p-6 bg-white border border-stone-200 rounded-lg hover:shadow-md transition-shadow group">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-stone-900 group-hover:text-amber-700">Moderate Reviews</h3>
-                        <HiStar className="h-6 w-6 text-stone-400 group-hover:text-amber-600" />
-                    </div>
-                    <p className="text-stone-600 mb-4">Approve or reject user submitted reviews.</p>
-                    <span className="text-amber-600 text-sm font-medium group-hover:underline">Go to Reviews &rarr;</span>
-                </Link>
+                ))}
             </div>
 
-            <div className="mt-6">
-                <Link href="/admin/books/new" className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                    <HiPlus className="-ml-1 mr-2 h-5 w-5" />
-                    Add New Book
-                </Link>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                {/* Chart Section */}
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-lg font-bold text-stone-900 flex items-center">
+                            <HiChartPie className="mr-2 text-amber-600" />
+                            Genre Distribution
+                        </h2>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={stats.genreDistribution}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {stats.genreDistribution.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                                />
+                                <Legend verticalAlign="bottom" height={36} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Quick Actions / Activity Placeholder */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                    <h2 className="text-lg font-bold text-stone-900 mb-6 flex items-center">
+                        <HiAdjustments className="mr-2 text-amber-600" />
+                        Management Links
+                    </h2>
+                    <div className="space-y-4">
+                        {managementLinks.map((link) => (
+                            <Link
+                                key={link.title}
+                                href={link.href}
+                                className="flex items-start p-3 rounded-lg hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100"
+                            >
+                                <div className="p-2 bg-amber-50 rounded text-amber-600 mr-3">
+                                    <link.icon className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-stone-900">{link.title}</p>
+                                    <p className="text-xs text-stone-500 mt-0.5">{link.desc}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
