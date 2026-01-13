@@ -85,14 +85,14 @@ export default function BookDetailsPage() {
                     rating,
                     content: reviewContent
                 });
-                toast.success('Review updated!');
+                toast.success('Review updated and pending approval!');
             } else {
                 await axios.post('/api/reviews', {
                     bookId: book._id,
                     rating,
                     content: reviewContent
                 });
-                toast.success('Review submitted!');
+                toast.success('Review submitted! It will be visible after admin approval.');
             }
 
             // Refresh book and reviews
@@ -222,8 +222,8 @@ export default function BookDetailsPage() {
                                         >
                                             <HiStar
                                                 className={`h-8 w-8 transition-colors ${star <= (hoverRating || rating)
-                                                        ? 'text-amber-500'
-                                                        : 'text-stone-300'
+                                                    ? 'text-amber-500'
+                                                    : 'text-stone-300'
                                                     } hover:text-amber-400`}
                                             />
                                         </button>

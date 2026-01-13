@@ -36,7 +36,13 @@ export default function AdminReviewsPage() {
     }, [user, authLoading, router]);
 
     const handleApprove = async (id) => {
-        // Function removed as reviews are auto-approved
+        try {
+            await axios.put(`/api/reviews/${id}/approve`);
+            toast.success('Review approved');
+            fetchReviews();
+        } catch (error) {
+            toast.error('Failed to approve review');
+        }
     };
 
     const handleDelete = async (id) => {
@@ -68,10 +74,13 @@ export default function AdminReviewsPage() {
                                                 {review.book?.title || 'Unknown Book'}
                                             </h3>
                                             <div className="flex items-center space-x-2">
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${review.status === 'pending'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : 'bg-green-100 text-green-800'
+                                                    }`}>
                                                     {review.status}
                                                 </span>
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                                                     Rating: {review.rating}/5
                                                 </span>
                                             </div>
@@ -80,6 +89,15 @@ export default function AdminReviewsPage() {
                                         <p className="text-stone-700 italic">&quot;{review.content}&quot;</p>
                                     </div>
                                     <div className="ml-6 flex items-center space-x-3">
+                                        {review.status === 'pending' && (
+                                            <button
+                                                onClick={() => handleApprove(review._id)}
+                                                className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                                title="Approve"
+                                            >
+                                                <HiCheck className="h-5 w-5" />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleDelete(review._id)}
                                             className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
