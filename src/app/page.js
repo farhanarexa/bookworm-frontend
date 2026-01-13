@@ -68,20 +68,25 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8 border-b border-stone-200 pb-6">
         <h1 className="text-3xl font-bold text-stone-900">Welcome back, {user.name}!</h1>
-        <p className="mt-2 text-stone-600">Here are some books we think you&apos;ll love based on your reading history.</p>
+        <p className="mt-2 text-stone-600">Personalized recommendations based on your reading preferences and community favorites.</p>
       </div>
 
       {loadingRecs ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 animate-pulse">
-          {[...Array(6)].map((_, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 animate-pulse">
+          {[...Array(12)].map((_, i) => (
             <div key={i} className="h-64 bg-stone-200 rounded-lg"></div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {recommendations.length > 0 ? (
             recommendations.map((book) => (
-              <Link href={`/books/${book._id}`} key={book._id} className="group flex flex-col h-full bg-white p-2 rounded-lg border border-transparent hover:border-stone-200 hover:shadow-sm transition-all">
+              <Link
+                href={`/books/${book._id}`}
+                key={book._id}
+                className="group relative flex flex-col h-full bg-white p-2 rounded-lg border border-transparent hover:border-amber-200 hover:shadow-lg transition-all"
+                title={book.reason || ''}
+              >
                 <div className="aspect-3/4 w-full overflow-hidden rounded-md bg-stone-200">
                   <img
                     src={book.coverImage}
@@ -92,11 +97,16 @@ export default function Home() {
                 <div className="mt-4 flex flex-col flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-stone-900 group-hover:text-amber-700 truncate">{book.title}</h3>
                   <p className="mt-1 text-xs text-stone-500 truncate">{book.author}</p>
+                  {book.reason && (
+                    <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-xs text-amber-700 italic line-clamp-2">{book.reason}</p>
+                    </div>
+                  )}
                 </div>
               </Link>
             ))
           ) : (
-            <p className="text-stone-500 col-span-full">Start adding books to your dashboard to see recommendations!</p>
+            <p className="text-stone-500 col-span-full">Start adding books to your library to see personalized recommendations!</p>
           )}
         </div>
       )}
