@@ -14,7 +14,9 @@ export default function BooksPage() {
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
-    const [selectedGenre, setSelectedGenre] = useState(searchParams.get('genre') || '');
+    const [selectedGenres, setSelectedGenres] = useState(searchParams.get('genre') ? searchParams.get('genre').split(',') : []);
+    const [minRating, setMinRating] = useState(searchParams.get('minRating') || '');
+    const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'newest');
     const [genres, setGenres] = useState([]);
 
     useEffect(() => {
@@ -35,8 +37,11 @@ export default function BooksPage() {
             try {
                 const search = searchParams.get('keyword') || '';
                 const genre = searchParams.get('genre') || '';
+                const minRating = searchParams.get('minRating') || '';
+                const sortBy = searchParams.get('sortBy') || 'newest';
                 const pageNum = searchParams.get('pageNumber') || 1;
-                const { data } = await axios.get(`/api/books?keyword=${search}&genre=${genre}&pageNumber=${pageNum}`);
+
+                const { data } = await axios.get(`/api/books?keyword=${search}&genre=${genre}&minRating=${minRating}&sortBy=${sortBy}&pageNumber=${pageNum}`);
                 setBooks(data.books);
                 setPage(data.page);
                 setPages(data.pages);
@@ -56,9 +61,23 @@ export default function BooksPage() {
     };
 
     const handleGenreChange = (genre) => {
-        const newGenre = genre === selectedGenre ? '' : genre; // Toggle
-        setSelectedGenre(newGenre);
-        updateSearchParams({ genre: newGenre, pageNumber: 1 });
+        const newGenres = selectedGenres.includes(genre)
+            ? selectedGenres.filter(g => g !== genre)
+            : [...selectedGenres, genre];
+        setSelectedGenres(newGenres);
+        updateSearchParams({ genre: newGenres.join(','), pageNumber: 1 });
+    };
+
+    const handleRatingChange = (rating) => {
+        const newRating = rating === minRating ? '' : rating; // Toggle
+        setMinRating(newRating);
+        updateSearchParams({ minRating: newRating, pageNumber: 1 });
+    };
+
+    const handleSortChange = (e) => {
+        const sort = e.target.value;
+        setSortBy(sort);
+        updateSearchParams({ sortBy: sort, pageNumber: 1 });
     };
 
     const handlePageChange = (pageNum) => {
@@ -83,7 +102,22 @@ export default function BooksPage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-stone-900 mb-8">Browse Books</h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-stone-900">Browse Books</h1>
+                <div className="flex items-center gap-2">
+                    <label htmlFor="sortBy" className="text-sm font-medium text-stone-700">Sort by:</label>
+                    <select
+                        id="sortBy"
+                        value={sortBy}
+                        onChange={handleSortChange}
+                        className="block w-full pl-3 pr-10 py-2 text-base border-stone-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md"
+                    >
+                        <option value="newest">Newest</option>
+                        <option value="rating">Top Rated</option>
+                        <option value="mostShelved">Most Shelved</option>
+                    </select>
+                </div>
+            </div>
 
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Filters Sidebar */}
@@ -111,23 +145,47 @@ export default function BooksPage() {
                             </form>
                         </div>
 
-                        <div>
+                        <div className="mb-6">
                             <h4 className="text-sm font-medium text-stone-700 mb-2">Genre</h4>
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                                 {genres.map(genre => (
                                     <div key={genre} className="flex items-center">
                                         <input
                                             id={`genre-${genre}`}
                                             name="genre"
                                             type="checkbox"
-                                            checked={selectedGenre === genre}
+                                            checked={selectedGenres.includes(genre)}
                                             onChange={() => handleGenreChange(genre)}
-                                            className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-stone-300 rounded"
+                                            className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-stone-300 rounded cursor-pointer"
                                         />
-                                        <label htmlFor={`genre-${genre}`} className="ml-2 block text-sm text-stone-700">
+                                        <label htmlFor={`genre-${genre}`} className="ml-2 block text-sm text-stone-700 cursor-pointer">
                                             {genre}
                                         </label>
                                     </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 className="text-sm font-medium text-stone-700 mb-2">Minimum Rating</h4>
+                            <div className="space-y-2">
+                                {[4, 3, 2].map(rating => (
+                                    <button
+                                        key={rating}
+                                        onClick={() => handleRatingChange(rating.toString())}
+                                        className={`w-full text-left px-2 py-1 rounded text-sm flex items-center justify-between ${minRating === rating.toString() ? 'bg-amber-50 text-amber-700 font-medium' : 'text-stone-600 hover:bg-stone-50'}`}
+                                    >
+                                        <span className="flex items-center">
+                                            {rating}+ Stars
+                                        </span>
+                                        <div className="flex text-amber-400">
+                                            {[...Array(5)].map((_, i) => (
+                                                <svg key={i} className={`h-3 w-3 ${i < rating ? 'fill-current' : 'text-stone-200'}`} viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+                                    </button>
                                 ))}
                             </div>
                         </div>
