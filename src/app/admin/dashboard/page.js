@@ -59,10 +59,10 @@ export default function AdminDashboard() {
     );
 
     const statCards = [
-        { label: 'Total Books', value: stats.totalBooks, icon: HiBookOpen, color: 'bg-blue-100 text-blue-600' },
-        { label: 'Total Users', value: stats.totalUsers, icon: HiUsers, color: 'bg-green-100 text-green-600' },
-        { label: 'Total Reviews', value: stats.totalReviews, icon: HiStar, color: 'bg-yellow-100 text-yellow-600' },
-        { label: 'Total Tutorials', value: stats.totalTutorials, icon: HiVideoCamera, color: 'bg-purple-100 text-purple-600' },
+        { label: 'Total Books', value: stats.totalBooks, icon: HiBookOpen, color: 'bg-blue-100 text-blue-600', href: '/admin/books' },
+        { label: 'Total Users', value: stats.totalUsers, icon: HiUsers, color: 'bg-green-100 text-green-600', href: '/admin/users' },
+        { label: 'Total Review', value: stats.totalReviews, icon: HiStar, color: 'bg-yellow-100 text-yellow-600', href: '/admin/reviews' },
+        { label: 'Total Tutorials', value: stats.totalTutorials, icon: HiVideoCamera, color: 'bg-purple-100 text-purple-600', href: '/admin/tutorials' },
     ];
 
     const managementLinks = [
@@ -91,15 +91,19 @@ export default function AdminDashboard() {
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {statCards.map((card) => (
-                    <div key={card.label} className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 flex items-center">
-                        <div className={`p-3 rounded-xl ${card.color} mr-4`}>
+                    <Link
+                        key={card.label}
+                        href={card.href}
+                        className="bg-white p-6 rounded-xl shadow-sm border border-stone-200 flex items-center hover:shadow-md hover:border-amber-200 transition-all group"
+                    >
+                        <div className={`p-3 rounded-xl ${card.color} mr-4 group-hover:scale-110 transition-transform`}>
                             <card.icon className="h-8 w-8" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-stone-500">{card.label}</p>
                             <p className="text-2xl font-bold text-stone-900">{card.value}</p>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
