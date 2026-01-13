@@ -13,10 +13,12 @@ export default function BookDetailsPage() {
     const [book, setBook] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [rating, setRating] = useState(5);
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
     const [reviewContent, setReviewContent] = useState('');
     const [submittingReview, setSubmittingReview] = useState(false);
     const [shelfLoading, setShelfLoading] = useState(false);
+    const [existingReview, setExistingReview] = useState(null);
 
     useEffect(() => {
         const fetchBookAndReviews = async () => {
@@ -27,7 +29,17 @@ export default function BookDetailsPage() {
                     axios.get(`/api/reviews/book/${id}`)
                 ]);
                 setBook(bookRes.data);
-                setReviews(reviewsRes.data);
+                const reviewsData = reviewsRes.data;
+                setReviews(reviewsData);
+
+                if (user) {
+                    const userReview = reviewsData.find(r => r.user?._id === user._id);
+                    if (userReview) {
+                        setExistingReview(userReview);
+                        setRating(userReview.rating);
+                        setReviewContent(userReview.content);
+                    }
+                }
             } catch (error) {
                 console.error(error);
                 toast.error('Failed to load book details');
@@ -37,7 +49,7 @@ export default function BookDetailsPage() {
         };
 
         fetchBookAndReviews();
-    }, [id]);
+    }, [id, user]);
 
     const handleAddToShelf = async (shelf) => {
         if (!user) {
@@ -68,14 +80,33 @@ export default function BookDetailsPage() {
 
         setSubmittingReview(true);
         try {
-            await axios.post('/api/reviews', {
-                bookId: book._id,
-                rating,
-                content: reviewContent
-            });
-            toast.success('Review submitted for approval!');
-            setReviewContent('');
-            setRating(5);
+            if (existingReview) {
+                await axios.put(`/api/reviews/${existingReview._id}`, {
+                    rating,
+                    content: reviewContent
+                });
+                toast.success('Review updated!');
+            } else {
+                await axios.post('/api/reviews', {
+                    bookId: book._id,
+                    rating,
+                    content: reviewContent
+                });
+                toast.success('Review submitted!');
+            }
+
+            // Refresh book and reviews
+            const [bookRes, reviewsRes] = await Promise.all([
+                axios.get(`/api/books/${id}`),
+                axios.get(`/api/reviews/book/${id}`)
+            ]);
+            setBook(bookRes.data);
+            const reviewsData = reviewsRes.data;
+            setReviews(reviewsData);
+            const userReview = reviewsData.find(r => r.user?._id === user._id);
+            if (userReview) {
+                setExistingReview(userReview);
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to submit review');
         } finally {
@@ -173,7 +204,9 @@ export default function BookDetailsPage() {
 
                 {user && (
                     <div className="bg-amber-50 p-6 rounded-xl border border-amber-100 h-fit">
-                        <h3 className="text-xl font-bold text-amber-900 mb-4">Write a Review</h3>
+                        <h3 className="text-xl font-bold text-amber-900 mb-4">
+                            {existingReview ? 'Edit Your Review' : 'Write a Review'}
+                        </h3>
                         <form onSubmit={submitReview} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-stone-700 mb-1">Rating</label>
@@ -183,9 +216,16 @@ export default function BookDetailsPage() {
                                             key={star}
                                             type="button"
                                             onClick={() => setRating(star)}
+                                            onMouseEnter={() => setHoverRating(star)}
+                                            onMouseLeave={() => setHoverRating(0)}
                                             className="focus:outline-none"
                                         >
-                                            <HiStar className={`h-8 w-8 ${star <= rating ? 'text-amber-500' : 'text-stone-300'} hover:text-amber-400 transition-colors`} />
+                                            <HiStar
+                                                className={`h-8 w-8 transition-colors ${star <= (hoverRating || rating)
+                                                        ? 'text-amber-500'
+                                                        : 'text-stone-300'
+                                                    } hover:text-amber-400`}
+                                            />
                                         </button>
                                     ))}
                                 </div>
@@ -202,10 +242,10 @@ export default function BookDetailsPage() {
                             </div>
                             <button
                                 type="submit"
-                                disabled={submittingReview}
+                                disabled={submittingReview || rating === 0}
                                 className="w-full bg-amber-700 text-white py-2 px-4 rounded-md hover:bg-amber-800 transition-colors disabled:opacity-50 font-medium"
                             >
-                                {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                {submittingReview ? 'Submitting...' : (existingReview ? 'Update Review' : 'Submit Review')}
                             </button>
                         </form>
                     </div>
