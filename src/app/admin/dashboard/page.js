@@ -61,13 +61,13 @@ export default function AdminDashboard() {
     const statCards = [
         { label: 'Total Books', value: stats.totalBooks, icon: HiBookOpen, color: 'bg-blue-100 text-blue-600' },
         { label: 'Total Users', value: stats.totalUsers, icon: HiUsers, color: 'bg-green-100 text-green-600' },
-        { label: 'Pending Reviews', value: stats.pendingReviews, icon: HiStar, color: 'bg-yellow-100 text-yellow-600' },
+        { label: 'Total Reviews', value: stats.totalReviews, icon: HiStar, color: 'bg-yellow-100 text-yellow-600' },
         { label: 'Total Tutorials', value: stats.totalTutorials, icon: HiVideoCamera, color: 'bg-purple-100 text-purple-600' },
     ];
 
     const managementLinks = [
         { title: 'Manage Books', desc: 'Add, edit, or remove books from the catalog.', href: '/admin/books', icon: HiBookOpen },
-        { title: 'Moderate Reviews', desc: 'Approve or reject user submitted reviews.', href: '/admin/reviews', icon: HiStar },
+        { title: 'Manage Reviews', desc: 'Monitor and delete user reviews.', href: '/admin/reviews', icon: HiStar },
         { title: 'User Roles', desc: 'Manage user permissions and roles.', href: '/admin/users', icon: HiUsers },
         { title: 'Tutorials', desc: 'Manage video guides and lessons.', href: '/admin/tutorials', icon: HiVideoCamera },
         { title: 'Genre Management', desc: 'Manage book categories.', href: '/admin/genres', icon: HiAdjustments },

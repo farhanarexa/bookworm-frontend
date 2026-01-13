@@ -15,7 +15,7 @@ export default function AdminReviewsPage() {
 
     const fetchReviews = async () => {
         try {
-            const { data } = await axios.get('/api/reviews/pending');
+            const { data } = await axios.get('/api/reviews/admin');
             setReviews(data);
         } catch (error) {
             console.error(error);
@@ -36,13 +36,7 @@ export default function AdminReviewsPage() {
     }, [user, authLoading, router]);
 
     const handleApprove = async (id) => {
-        try {
-            await axios.put(`/api/reviews/${id}/approve`);
-            toast.success('Review approved');
-            setReviews(reviews.filter(r => r._id !== id));
-        } catch (error) {
-            toast.error('Failed to approve review');
-        }
+        // Function removed as reviews are auto-approved
     };
 
     const handleDelete = async (id) => {
@@ -60,7 +54,7 @@ export default function AdminReviewsPage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-3xl font-bold text-stone-900 mb-8">Pending Reviews</h1>
+            <h1 className="text-3xl font-bold text-stone-900 mb-8">Manage Reviews</h1>
 
             {reviews.length > 0 ? (
                 <div className="bg-white shadow overflow-hidden sm:rounded-md border border-stone-200">
@@ -73,21 +67,19 @@ export default function AdminReviewsPage() {
                                             <h3 className="text-lg font-medium text-stone-900">
                                                 {review.book?.title || 'Unknown Book'}
                                             </h3>
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                Rating: {review.rating}/5
-                                            </span>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                                                    {review.status}
+                                                </span>
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    Rating: {review.rating}/5
+                                                </span>
+                                            </div>
                                         </div>
                                         <p className="text-sm text-stone-500 mb-2">By {review.user?.name || 'Unknown User'}</p>
                                         <p className="text-stone-700 italic">&quot;{review.content}&quot;</p>
                                     </div>
                                     <div className="ml-6 flex items-center space-x-3">
-                                        <button
-                                            onClick={() => handleApprove(review._id)}
-                                            className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                            title="Approve"
-                                        >
-                                            <HiCheck className="h-5 w-5" />
-                                        </button>
                                         <button
                                             onClick={() => handleDelete(review._id)}
                                             className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -103,7 +95,7 @@ export default function AdminReviewsPage() {
                 </div>
             ) : (
                 <div className="text-center py-12 bg-white rounded-lg border border-stone-200">
-                    <p className="text-stone-500">No pending reviews to moderate.</p>
+                    <p className="text-stone-500">No reviews found.</p>
                 </div>
             )}
         </div>
