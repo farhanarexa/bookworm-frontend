@@ -19,6 +19,19 @@ export default function EditBookPage() {
     });
     const [submitting, setSubmitting] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [genres, setGenres] = useState([]);
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const { data } = await axios.get('/api/books/genres');
+                setGenres(data.map(g => g.name));
+            } catch (error) {
+                console.error('Failed to fetch genres', error);
+            }
+        };
+        fetchGenres();
+    }, []);
 
     useEffect(() => {
         if (!authLoading) {
@@ -47,8 +60,6 @@ export default function EditBookPage() {
             fetchBook();
         }
     }, [user, authLoading, router, id]);
-
-    const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Sci-Fi', 'Fantasy', 'Romance', 'History', 'Technology'];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

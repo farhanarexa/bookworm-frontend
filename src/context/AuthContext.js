@@ -50,7 +50,11 @@ export const AuthProvider = ({ children }) => {
             const { data } = await axios.post('/api/users', { name, email, password, photo: photoUrl });
             setUser(data);
             toast.success('Registration Successful');
-            router.push('/');
+            if (data.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else {
+                router.push('/');
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Registration failed');
         }
@@ -62,7 +66,11 @@ export const AuthProvider = ({ children }) => {
             const { data } = await axios.post('/api/users/login', userData);
             setUser(data);
             toast.success('Login Successful');
-            router.push('/');
+            if (data.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else {
+                router.push('/');
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Login failed');
         }

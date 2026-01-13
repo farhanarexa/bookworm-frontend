@@ -5,6 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { HiBookOpen, HiCheck, HiClock, HiBookmark } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
 
 export default function MyLibraryPage() {
     const { user } = useAuth();
@@ -12,21 +13,37 @@ export default function MyLibraryPage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('currentlyReading');
 
+    const fetchLibrary = async () => {
+        try {
+            const { data } = await axios.get('/api/users/library');
+            setLibrary(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (user) {
-            const fetchLibrary = async () => {
-                try {
-                    const { data } = await axios.get('/api/users/library');
-                    setLibrary(data);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchLibrary();
         }
     }, [user]);
+
+    const addToShelf = async (bookId, shelf, progress = 0, totalLength = 0) => {
+        try {
+            await axios.post('/api/users/shelf', {
+                bookId,
+                shelf,
+                progress,
+                totalLength
+            });
+            toast.success('Progress updated');
+            fetchLibrary();
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to update progress');
+        }
+    };
 
     if (!user) return <div className="flex justify-center p-8">Please login to view your library.</div>;
     if (loading) return <div className="flex justify-center p-8">Loading...</div>;

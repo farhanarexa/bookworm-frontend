@@ -70,6 +70,7 @@ export default function AdminDashboard() {
         { title: 'Moderate Reviews', desc: 'Approve or reject user submitted reviews.', href: '/admin/reviews', icon: HiStar },
         { title: 'User Roles', desc: 'Manage user permissions and roles.', href: '/admin/users', icon: HiUsers },
         { title: 'Tutorials', desc: 'Manage video guides and lessons.', href: '/admin/tutorials', icon: HiVideoCamera },
+        { title: 'Genre Management', desc: 'Manage book categories.', href: '/admin/genres', icon: HiAdjustments },
     ];
 
     return (

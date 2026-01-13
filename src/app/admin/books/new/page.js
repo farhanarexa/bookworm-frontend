@@ -17,14 +17,25 @@ export default function NewBookPage() {
         coverImage: ''
     });
     const [submitting, setSubmitting] = useState(false);
+    const [genres, setGenres] = useState([]);
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const { data } = await axios.get('/api/books/genres');
+                setGenres(data.map(g => g.name));
+            } catch (error) {
+                console.error('Failed to fetch genres', error);
+            }
+        };
+        fetchGenres();
+    }, []);
 
     useEffect(() => {
         if (!authLoading && (!user || user.role !== 'admin')) {
             router.push('/');
         }
     }, [user, authLoading, router]);
-
-    const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Sci-Fi', 'Fantasy', 'Romance', 'History', 'Technology'];
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

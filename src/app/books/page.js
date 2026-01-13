@@ -15,9 +15,19 @@ export default function BooksPage() {
     const [pages, setPages] = useState(1);
     const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
     const [selectedGenre, setSelectedGenre] = useState(searchParams.get('genre') || '');
+    const [genres, setGenres] = useState([]);
 
-    // Hardcoded genres for now, fetch from backend later if needed
-    const genres = ['Fiction', 'Non-Fiction', 'Mystery', 'Sci-Fi', 'Fantasy', 'Romance', 'History', 'Technology'];
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const { data } = await axios.get('/api/books/genres');
+                setGenres(data.map(g => g.name));
+            } catch (error) {
+                console.error('Failed to fetch genres', error);
+            }
+        };
+        fetchGenres();
+    }, []);
 
     useEffect(() => {
         const fetchBooks = async () => {

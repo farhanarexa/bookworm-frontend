@@ -4,9 +4,12 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
+import GoalSetter from "@/components/GoalSetter";
+import ActivityFeed from "@/components/ActivityFeed";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  // ... existing code ...
+  const { user, loading, checkUserLoggedIn } = useAuth();
   const [recommendations, setRecommendations] = useState([]);
   const [loadingRecs, setLoadingRecs] = useState(true);
 
@@ -24,10 +27,6 @@ export default function Home() {
       };
       fetchRecommendations();
     } else {
-      // Fetch popular books for guests logic could be here, but for now just wait for login
-      // Actually, let's fetch generic generic popular books if not logged in if the API supports it
-      // Our API endpoint /recommendations is protected. 
-      // We can just show a landing hero for guests.
       setLoadingRecs(false);
     }
   }, [user]);
@@ -36,7 +35,12 @@ export default function Home() {
     return <div className="flex justify-center items-center h-screen text-amber-800">Loading...</div>;
   }
 
+  const readCount = user?.read?.length || 0;
+  const goal = user?.readingGoal || 0;
+  const progressPercent = goal > 0 ? Math.min((readCount / goal) * 100, 100) : 0;
+
   if (!user) {
+    // ... existing landing code ...
     return (
       <div className="relative isolate overflow-hidden bg-stone-900 py-24 sm:py-32 h-[calc(100vh-64px)] flex flex-col justify-center">
         <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="" className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center opacity-30" />
@@ -97,15 +101,40 @@ export default function Home() {
         </div>
       )}
 
-      <div className="mt-12 bg-amber-50 rounded-xl p-8 border border-amber-100">
-        <h2 className="text-2xl font-bold text-amber-900 mb-4">Reading Challenge 2026</h2>
-        <div className="flex items-center space-x-4">
-          <div className="flex-1 bg-white rounded-full h-4 overflow-hidden border border-amber-200">
-            <div className="bg-amber-600 h-full w-[20%]"></div>
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Reading Challenge */}
+        <div className="lg:col-span-2 bg-amber-50 rounded-2xl p-8 border border-amber-100 flex flex-col justify-between">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-amber-900 font-serif">Reading Challenge {new Date().getFullYear()}</h2>
+              <p className="text-stone-600 mt-2">
+                {goal > 0
+                  ? progressPercent >= 100 ? "Congratulations! You've reached your goal!" : "You're on track! Keep reading to reach your goal."
+                  : "Set an annual reading goal to track your progress!"}
+              </p>
+            </div>
+            <GoalSetter currentGoal={goal} onUpdate={() => checkUserLoggedIn()} />
           </div>
-          <span className="text-amber-800 font-medium">10 / 50 Books</span>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-sm font-medium text-amber-900">
+              <span>Overall Progress</span>
+              <span>{readCount} / {goal} Books</span>
+            </div>
+            <div className="w-full bg-white rounded-full h-4 overflow-hidden border border-amber-200 shadow-inner">
+              <div
+                className="bg-amber-600 h-full transition-all duration-1000 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              ></div>
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-sm text-amber-700">You&apos;re on track! Keep reading to reach your goal.</p>
+
+        {/* Activity Feed */}
+        <div className="bg-white rounded-2xl p-8 border border-stone-200 shadow-sm">
+          <h2 className="text-xl font-bold text-stone-900 mb-6 font-serif">Community Activity</h2>
+          <ActivityFeed />
+        </div>
       </div>
     </div>
   );
