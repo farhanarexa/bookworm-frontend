@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="text-2xl font-serif font-bold text-amber-500">Bookworm</span>
             </div>
             <p className="mt-4 text-stone-400 max-w-md">
-              Your personalized digital library. Discover new worlds, keep track of what you've read, 
+              Your personalized digital library. Discover new worlds, keep track of what you&apos;ve read, 
               and join a community of book lovers.
             </p>
             <div className="flex space-x-4 mt-6">
