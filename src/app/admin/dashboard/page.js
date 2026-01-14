@@ -30,6 +30,7 @@ export default function AdminDashboard() {
     const router = useRouter();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const isMdUp = useIsMdUp();
 
     useEffect(() => {
         if (!authLoading) {
@@ -72,6 +73,20 @@ export default function AdminDashboard() {
         { title: 'Tutorials', desc: 'Manage video guides and lessons.', href: '/admin/tutorials', icon: HiVideoCamera },
         { title: 'Genre Management', desc: 'Manage book categories.', href: '/admin/genres', icon: HiAdjustments },
     ];
+    function useIsMdUp() {
+        const [isMdUp, setIsMdUp] = useState(false);
+
+        useEffect(() => {
+            const media = window.matchMedia("(min-width: 768px)");
+            const listener = () => setIsMdUp(media.matches);
+
+            listener();
+            media.addEventListener("change", listener);
+            return () => media.removeEventListener("change", listener);
+        }, []);
+
+        return isMdUp;
+    }
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -109,7 +124,7 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                 {/* Chart Section */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-stone-200 min-w-0">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-stone-900 flex items-center">
                             <HiChartPie className="mr-2 text-amber-600" />
@@ -135,7 +150,7 @@ export default function AdminDashboard() {
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
                                 />
-                                <Legend verticalAlign="bottom" height={36} />
+                                {isMdUp && <Legend verticalAlign="bottom" height={36} />}
                             </PieChart>
                         </ResponsiveContainer>
                     </div>

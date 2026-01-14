@@ -67,8 +67,8 @@ function MyLibraryPageContent() {
             <h1 className="text-3xl font-bold text-stone-900 mb-8">My Library</h1>
 
             {/* Tabs */}
-            <div className="border-b border-stone-200 mb-8">
-                <nav className="-mb-px flex space-x-8">
+            <div className="border-b border-stone-200 mb-8 overflow-x-auto pb-1">
+                <nav className="-mb-px flex space-x-8 min-w-max px-1">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
