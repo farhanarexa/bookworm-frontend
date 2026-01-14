@@ -78,12 +78,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+                <Link href="/privacy-policy" className="text-stone-400 hover:text-amber-500 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+                <Link href="/terms-of-service" className="text-stone-400 hover:text-amber-500 transition-colors">
                   Terms of Service
                 </Link>
               </li>
