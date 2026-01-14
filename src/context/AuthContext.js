@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
             if (data.role === 'admin') {
                 router.push('/admin/dashboard');
             } else {
-                router.push('/');
+                router.push('/my-library');
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Registration failed');
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
             if (data.role === 'admin') {
                 router.push('/admin/dashboard');
             } else {
-                router.push('/');
+                router.push('/my-library');
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Login failed');
@@ -88,8 +88,23 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Check authentication and redirect if needed
+    const checkAuthAndRedirect = (requiredRole = null) => {
+        if (!user) {
+            router.push('/auth/login');
+            return false;
+        }
+
+        if (requiredRole && user.role !== requiredRole) {
+            router.push('/');
+            return false;
+        }
+
+        return true;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, register, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, register, login, logout, loading, checkAuthAndRedirect }}>
             {children}
         </AuthContext.Provider>
     );

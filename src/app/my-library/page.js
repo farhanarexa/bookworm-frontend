@@ -6,8 +6,17 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { HiBookOpen, HiCheck, HiClock, HiBookmark } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function MyLibraryPage() {
+    return (
+        <ProtectedRoute>
+            <MyLibraryPageContent />
+        </ProtectedRoute>
+    );
+}
+
+function MyLibraryPageContent() {
     const { user } = useAuth();
     const [library, setLibrary] = useState({ wantToRead: [], currentlyReading: [], read: [] });
     const [loading, setLoading] = useState(true);
@@ -45,7 +54,6 @@ export default function MyLibraryPage() {
         }
     };
 
-    if (!user) return <div className="flex justify-center p-8">Please login to view your library.</div>;
     if (loading) return <div className="flex justify-center p-8">Loading...</div>;
 
     const tabs = [
@@ -133,7 +141,7 @@ export default function MyLibraryPage() {
                                                         }}
                                                     />
                                                 </div>
-                                                <Link href={`/books/${item.book._id}`} className="text-xs text-amber-700 hover:text-amber-900 font-medium">
+                                                <Link href={`/books/${item.book._id}`} className="text-xs text-amber-700 hover:text-amber-700 font-medium">
                                                     View Details &rarr;
                                                 </Link>
                                             </div>

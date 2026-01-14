@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bookworm Frontend
 
-## Getting Started
+Bookworm is a comprehensive digital library platform that allows users to browse, search, and manage their personal book collections. Built with Next.js, it provides a responsive and intuitive interface for discovering and organizing books.
 
-First, run the development server:
+## Features
 
+- **Book Discovery**: Browse and search through a vast collection of books
+- **Personal Library**: Add books to your personal reading list
+- **Advanced Filtering**: Filter books by genre, rating, and other criteria
+- **User Authentication**: Secure login and registration system
+- **Book Reviews**: Rate and review books you've read
+- **Reading Progress Tracking**: Track your reading progress
+- **Responsive Design**: Works seamlessly across all devices
+- **Admin Dashboard**: Manage books, users, and content
+
+## Tech Stack
+
+- **Framework**: Next.js 16.1.1 (App Router)
+- **Runtime**: React 19.2.3
+- **Styling**: Tailwind CSS
+- **Icons**: React Icons
+- **HTTP Client**: Axios
+- **UI Components**: Custom components with Tailwind CSS
+- **State Management**: React Context API
+- **Toast Notifications**: React Hot Toast
+- **Charts**: Recharts
+
+## Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+## Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd bookworm-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. Create a `.env.local` file in the root directory and add the following environment variables:
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Start the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open your browser and navigate to `http://localhost:3000`
 
-To learn more about Next.js, take a look at the following resources:
+## Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `NEXT_PUBLIC_API_BASE_URL`: The base URL for the backend API (e.g., `http://localhost:5000`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Scripts
 
-## Deploy on Vercel
+- `npm run dev`: Starts the development server
+- `npm run build`: Creates an optimized production build
+- `npm run start`: Starts the production server
+- `npm run lint`: Runs ESLint to check for code issues
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                 # Next.js app router pages
+│   ├── admin/           # Admin dashboard pages
+│   ├── auth/            # Authentication pages
+│   ├── books/           # Book browsing pages
+│   ├── my-library/      # Personal library pages
+│   ├── tutorials/       # Tutorial pages
+│   ├── layout.js        # Root layout
+│   └── page.js          # Home page
+├── components/          # Reusable UI components
+├── context/             # React Context providers
+├── lib/                 # Utility functions
+└── services/            # API service functions
+```
+
+## API Integration
+
+The frontend communicates with the Bookworm backend API. Make sure the backend server is running before starting the frontend.
+
+## Deployment
+
+### Netlify
+
+1. Connect your GitHub repository to Netlify
+2. Set the build command to `npm run build`
+3. Set the publish directory to `out`
+4. Add environment variables in the Netlify dashboard
+
+### Vercel
+
+1. Import your project into Vercel
+2. The build settings will be automatically detected
+3. Add environment variables in the project settings
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+## License
+
+This project is licensed under the ISC License.

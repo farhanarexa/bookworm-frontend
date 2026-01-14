@@ -6,8 +6,17 @@ import axios from "axios";
 import Link from "next/link";
 import GoalSetter from "@/components/GoalSetter";
 import ActivityFeed from "@/components/ActivityFeed";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Home() {
+  return (
+    <ProtectedRoute>
+      <HomePageContent />
+    </ProtectedRoute>
+  );
+}
+
+function HomePageContent() {
   // ... existing code ...
   const { user, loading, checkUserLoggedIn } = useAuth();
   const [recommendations, setRecommendations] = useState([]);
@@ -38,31 +47,6 @@ export default function Home() {
   const readCount = user?.read?.length || 0;
   const goal = user?.readingGoal || 0;
   const progressPercent = goal > 0 ? Math.min((readCount / goal) * 100, 100) : 0;
-
-  if (!user) {
-    // ... existing landing code ...
-    return (
-      <div className="relative isolate overflow-hidden bg-stone-900 py-24 sm:py-32 h-[calc(100vh-64px)] flex flex-col justify-center">
-        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="" className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center opacity-30" />
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:mx-0">
-            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">Track your reading journey</h2>
-            <p className="mt-6 text-lg leading-8 text-stone-300">
-              Discover new worlds, keep track of what you&apos;ve read, and join a community of book lovers. Start your personal library today.
-            </p>
-            <div className="mt-10 flex items-center gap-x-6">
-              <Link href="/auth/register" className="rounded-md bg-amber-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
-                Get started
-              </Link>
-              <Link href="/books" className="text-sm font-semibold leading-6 text-white">
-                Browse books <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

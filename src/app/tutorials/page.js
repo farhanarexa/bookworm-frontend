@@ -3,8 +3,17 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function TutorialsPage() {
+    return (
+        <ProtectedRoute>
+            <TutorialsPageContent />
+        </ProtectedRoute>
+    );
+}
+
+function TutorialsPageContent() {
     const [tutorials, setTutorials] = useState([]);
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState('');
