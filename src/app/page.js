@@ -11,16 +11,9 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Home() {
   const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && user?.role === 'admin') {
-      router.push('/admin/dashboard');
-    }
-  }, [user, loading, router]);
 
   return (
-    <ProtectedRoute redirectToMyLibrary={true}>
+    <ProtectedRoute>
       <HomePageContent />
     </ProtectedRoute>
   );
