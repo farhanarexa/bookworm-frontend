@@ -33,17 +33,14 @@ export const AuthProvider = ({ children }) => {
         try {
             let photoUrl = userData.photo;
 
-            // If photo is a file object, upload it first
+            // If photo is a file object, convert to Base64
             if (userData.photoFile) {
-                const formData = new FormData();
-                formData.append('image', userData.photoFile);
-
-                const { data: uploadData } = await axios.post('/api/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                photoUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(userData.photoFile);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = (error) => reject(error);
                 });
-                photoUrl = uploadData.image;
             }
 
             const { name, email, password } = userData;
@@ -104,7 +101,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, register, login, logout, loading, checkAuthAndRedirect }}>
+        <AuthContext.Provider value={{ user, register, login, logout, loading, checkAuthAndRedirect, checkUserLoggedIn }}>
             {children}
         </AuthContext.Provider>
     );

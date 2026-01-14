@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import GoalSetter from "@/components/GoalSetter";
@@ -9,8 +10,17 @@ import ActivityFeed from "@/components/ActivityFeed";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user?.role === 'admin') {
+      router.push('/admin/dashboard');
+    }
+  }, [user, loading, router]);
+
   return (
-    <ProtectedRoute>
+    <ProtectedRoute redirectToMyLibrary={true}>
       <HomePageContent />
     </ProtectedRoute>
   );
