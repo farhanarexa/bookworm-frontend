@@ -14,7 +14,7 @@ export default function Navbar() {
     const isActive = (path) => pathname === path ? 'text-amber-700 bg-amber-50' : 'text-stone-600 hover:text-amber-700 hover:bg-amber-50';
 
     return (
-        <nav className="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <nav className="bg-amber-50 border-b border-stone-200 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex">

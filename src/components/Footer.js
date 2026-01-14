@@ -7,7 +7,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-stone-900 text-stone-300 py-12 mt-16">
+    <footer className="bg-stone-700 text-stone-300 py-12 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
@@ -19,19 +19,19 @@ export default function Footer() {
               and join a community of book lovers.
             </p>
             <div className="flex space-x-4 mt-6">
-              <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+              <Link href="https://www.facebook.com/" className="text-stone-400 hover:text-amber-500 transition-colors">
                 <FaFacebookF className="h-5 w-5" />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+              <Link href="https://x.com/" className="text-stone-400 hover:text-amber-500 transition-colors">
                 <FaTwitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+              <Link href="https://www.instagram.com/" className="text-stone-400 hover:text-amber-500 transition-colors">
                 <FaInstagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-stone-400 hover:text-amber-500 transition-colors">
+              <Link href="https://www.linkedin.com/" className="text-stone-400 hover:text-amber-500 transition-colors">
                 <FaLinkedinIn className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
